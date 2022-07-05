@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Reply Forum</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js">
+  </script>
+
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js">
+  </script>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
+    integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+</head>
+
+<body>
+
+  <div class="container-fluid mt-10">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card mb-4">
+          <div class="card-header">
+            <div class="media flex-wrap w-100 align-items-center">
+              <div class="media-body ml-3"> <a href="/replyforumview/{{post.id}}" data-abc="true">{{post.user1}}</a>
+              </div>
+              <div class="text-muted small ml-3">
+                <div class="px-4 pt-3">{{post.timestamp}} </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <p>{{post.post_content}}</p>
+          </div>
+          <div class="card-footer d-flex flex-wrap justify-content-between align-items-center px-0 pt-0 pb-3">
+          </div>
+          <button class="btn btn-primary btn-primary" data-target="#reply" data-toggle="modal"
+            role="button">Reply</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% for reply in replies %}
+  <br>
+  <div class="container">
+    <div class="media">
+    <!--  <img class="mr-3" src="/media/{{reply.image}}" alt="." width="30px" height="30px">-->
+      <div class="media-body">
+        <a href="/replyforumview/{{post.id}}" data-abc="true">{{reply.user}}</a>
+        <h4 class="mt-0">{{reply.user}} &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span><small
+              style="font-size: 13px;">({{reply.timestamp}})</small></span></h4>
+        <h5>{{reply.reply_content}}</h5>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+  <!-- Modal -->
+
+  <div class="modal fade" id="reply" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel"></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form action="/replyforumview/{{post.id}}" method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+              <label for="exampleFormControlTextarea1">Post Your Solution Here</label>
+              <input type="hidden" name="post_id" value="{{post.id}}">
+              <textarea class="form-control" id="desc" name="desc" rows="3"></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Post Solution</button>
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% if alert %}
+  <script>alert('Your Solution has been posted successfully!!');
+    document.location = 'http://127.0.0.1:8000/discussionforumview/'
+  </script>
+  {% endif %}
+</body>
+
+</html>

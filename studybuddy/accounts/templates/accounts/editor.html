@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Notes</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fontawesome/4.7.0/css/font-awesome.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        /* The Modal (background) */
+        .modal {
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            /* Stay in place */
+            z-index: 1;
+            /* Sit on top */
+            padding-top: 100px;
+            /* Location of the box */
+            left: 0;
+            top: 0;
+            width: 100%;
+            /* Full width */
+            height: 100%;
+            /* Full height */
+            overflow: auto;
+            /* Enable scroll if needed */
+            background-color: rgb(0, 0, 0);
+            /* Fallback color */
+            background-color: rgba(0, 0, 0, 0.4);
+            /* Black w/ opacity */
+        }
+
+        /* Modal Content */
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        /* The Close Button */
+        .close {
+            color: #aaaaaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .navbar-menu>navbar-end>a:hover {
+            text-decoration: none;
+            background-color: transparent !important;
+        }
+    </style>
+
+</head>
+<script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+<df-messenger
+  intent="WELCOME"
+  chat-title="MyChatbot"
+  agent-id="02bb9a4a-8435-444b-98aa-85d4a18337a9"
+  language-code="en"
+></df-messenger>
+<body>
+    <nav class="navbar bg-info   bg-primary fixed-top">
+        <div class="navbar-brand">
+            <a href="{% url 'editor' %}" class="btn btn-info navbar-btn">Notes</a>
+        </div>
+
+        <div class="navbar-menu">
+            <div class="navbar-end">
+                <a href="{% url 'home' %}?docid=0" class="btn btn-info navbar-btn">Home</a>
+                <a href="{% url 'editor' %}?docid=0" class="btn btn-info navbar-btn">New document</a>
+            </div>
+        </div>
+    </nav>
+    <br><br>
+    <section class="section" style="color:black">
+        <div class="columns">
+            <div class="column is-2">
+                <aside class="menu">
+                    <p class="menu-label">My Notes</p>
+
+                    <ul class="menu-list">
+                        {% for doc in documents %}
+                        {% if doc.user.username == user.username %}
+                        <li>
+                            <a href="{% url 'editor' %}?docid={{ doc.id }}">{{ doc.title }}</a>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+                    </ul>
+                </aside>
+            </div>
+            <br><br><br><br>
+            <div class="column is-10">
+                <form method="post" action="{% url 'editor' %}">
+                    {% csrf_token %}
+
+                    <input type="hidden" name="docid" value="{{ docid }}">
+
+                    <div class="field">
+                        <label class="label">
+                            Title
+
+                            {% if document %}
+                            <span class="has-text-grey-light">
+                                Created at: {{ document.created_at|date:"m/d/Y" }}
+                                Modified at: {{ document.modified_at|date:"m/d/Y" }}
+                            </span>
+                            {% endif %}
+                        </label>
+
+                        <div class="control">
+                            <input type="text" class="input" name="title" placeholder="Title" {% if document %}
+                                value="{{ document.title }}" {% endif %}>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">Content</label>
+
+                        <div class="control">
+                            <textarea class="textarea" name="content"
+                                placeholder="Content">{% if document %}{{ document.content }}{% endif %}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button class="button is-info" id="myBtn">Save</button>
+
+                        </div>
+                        {% if document %}
+                        <div class="control">
+                            <a href="{% url 'delete_document' document.id %}" class="button is-danger">Delete</a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </section>
+    <div id="myModal" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p>Note Saved!..</p>
+        </div>
+
+    </div>
+    <script>
+        // Get the modal
+        var modal = document.getElementById("myModal");
+
+        // Get the button that opens the modal
+        var btn = document.getElementById("myBtn");
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+
+        // When the user clicks the button, open the modal 
+        btn.onclick = function () {
+            modal.style.display = "block";
+        }
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function () {
+            modal.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+
+</html>

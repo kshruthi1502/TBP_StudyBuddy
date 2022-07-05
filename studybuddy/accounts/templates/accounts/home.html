@@ -1,0 +1,261 @@
+<<!DOCTYPE html>
+<html lang="en">
+<head>
+ <title>HomePage</title>
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fontawesome/4.7.0/css/font-awesome.min.css">
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+ <link rel="stylesheet" 
+href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+ <script 
+src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+ <script 
+src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+   
+    <style>
+        body {
+  font-family: "Lato", sans-serif;
+}
+
+.sidenav {
+  height: 100%;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: black;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 60px;
+}
+
+.sidenav a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+}
+
+.sidenav a:hover {
+  color: #f1f1f1;
+}
+
+.sidenav .closebtn {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
+}
+        body {
+          margin: 0;
+          font-family: "Lato", sans-serif;
+        }
+        
+        .sidebar {
+          margin: 0;
+          padding: 0;
+          width: 200px;
+          background-color: #f1f1f1;
+          position: fixed;
+          height: 100%;
+          overflow: auto;
+        }
+        
+        .sidebar a {
+          display: block;
+          color: black;
+          padding: 16px;
+          text-decoration: none;
+        }
+         
+        .sidebar a.active {
+          background-color: #04AA6D;
+          color: white;
+        }
+        
+        .sidebar a:hover:not(.active) {
+          background-color: #555;
+          color: white;
+        }
+        
+        div.content {
+          margin-left: 200px;
+          padding: 1px 16px;
+          height: 1000px;
+        }
+        
+        @media screen and (max-width: 700px) {
+          .sidebar {
+            width: 100%;
+            height: auto;
+            position: relative;
+          }
+          .sidebar a {float: left;}
+          div.content {margin-left: 0;}
+        }
+        
+        @media screen and (max-width: 400px) {
+          .sidebar a {
+            text-align: center;
+            float: none;
+          }
+        }
+        </style>
+    </head>
+ <style>
+ #head1 {
+ color: white;
+ }
+ body {
+ background-color: azure;
+ }
+ .container {
+ display: flex;
+ flex-direction: row;
+ justify-content: center;
+ height: 80%;
+ text-align: center;
+ padding-top: 6%;
+ ;
+ }
+ .sub {
+ margin-top: auto;
+ margin-bottom: auto;
+ height: 100%;
+ }
+ .col {
+ text-align: center;
+ }
+ .button {
+ width: 30%;
+
+ height: 80%;
+ font-size: 18px;
+ min-height: 50px;
+ min-width: 200px;
+ font-weight: bold;
+ color: white;
+ background-color: dodgerblue;
+ border-style: none;
+ text-decoration: none;
+ }
+ .btn-primary:hover,
+ .btn-primary:focus,
+ .btn-primary:active,
+ .btn-primary.active,
+ .open>.dropdown-toggle.btn-primary {
+ color: #fff;
+ }
+ #heading {
+ font-family: 'Lobster', cursive;
+ padding-top: 20px;
+ color: maroon;
+ margin: auto;
+ font-size: 50px;
+ }
+ #head {
+ color: purple;
+ }
+ @media screen and (max-width: 600px) {
+ .row {
+ display: flex;
+ flex-direction: column;
+ justify-content: space-around;
+ align-items: center;
+ height: 100%;
+ text-align: center;
+ }
+ .container {
+ padding-top: 23%;
+ }
+ .space {
+ padding-top: 5%;
+ ;
+ }
+ }
+ </style>
+
+ <script>
+ function buy() {
+ location.href = "filters";
+ }
+ function sell() {
+ location.href = "adpost";
+ }
+ </script>
+</head>
+<body>
+      <div id="mySidenav" class="sidenav">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <a href="avail_studdyb.html">Available Courses</a>
+        <a href="{% url 'mycourses' %}">My Courses</a>
+        
+      </div>
+      <script>
+        document.getElementById("mySidenav").style.width = "250px";  
+     
+      </script>
+ <nav class="navbar navbar-expand-sm bg-info navbar-dark fixed-top">
+    
+ <a class="navbar-brand" href="#"><i class="fa fa-home" style="fontsize:30px"></i></a>
+ <h2 id="head1">STUDY BUDDY</h2>
+ <button class="navbar-toggler" type="button" data-toggle="collapse" datatarget="#collapsibleNavbar">
+ <span class="navbar-toggler-icon"></span>
+ </button>
+ <div class="collapse navbar-collapse" id="collapsibleNavbar">
+ <ul class="navbar-nav ml-auto">
+ <!--<li class="nav-item">
+ <a class="nav-link active" href="{% url 'dashboard' %}">HOME</a>
+ </li>-->
+ <li class="nav-item">
+ <a class="nav-link active" href="about.html">ABOUT</a>
+ </li>
+ 
+ <li class="nav-item dropdown active">
+ <a class="nav-link dropdown-toggle" href="http://example.com" 
+id="dropdown09" data-toggle="dropdown" aria-haspopup="true" ariaexpanded="false">{{user.username}}</a>
+ <div class="dropdown-menu" aria-labelledby="dropdown09">
+ <a class="dropdown-item" href="{% url 'profile' %}">My Profile</a>
+ 
+ <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+ </div>
+ </li>
+ </ul>
+ </div>
+ </nav>
+ <br>
+ <div class="container-fluid" style="margin-top:15px">
+ <div class="container">
+ <table>
+
+ <tr>
+ <td>
+ <div class="row sub align-items-center">
+ <div class="col">
+ <!--<img src="https://media.istockphoto.com/vectors/buying-a-new-housevector-id628884380?k=6&m=628884380&s=612x612&w=0&h=0JHnf3HgX-9-F3Fni4s38e04aMLlKRhAKSLeqIE3hg=" alt="img" class="rounded-circle img-fluid">-->
+ </div>
+ <div class="col space">
+ <!--<button class="button" onclick="buy()">BUY A 
+PROPERTY</button><br><br><br>
+ <button class="button" onclick="sell()">SELL A PROPERTY</button>
+ -->
+ </div>
+ </div>
+ </td>
+ </tr>
+ </table>
+ </div>
+ </div>
+</body>
+</html>>

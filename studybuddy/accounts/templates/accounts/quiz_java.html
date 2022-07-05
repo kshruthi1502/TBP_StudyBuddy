@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Java Quiz</title>
+		<meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, width=device-width">	
+		<link rel="stylesheet" href="css/bootstrap.min.css">
+		<link rel="stylesheet" href="css/bootstrap-theme.min.css">
+		<link rel="stylesheet" href="css/spinkit.css">
+		
+	</head>
+<body>
+
+<div class="element" id="timer_area" style="position: fixed; top:0px; height: 100px; width:100%; background-color:rgb(23,162,184); font-size: 2em; color:#fff; padding: 5px;">
+	<div align="center">
+		<div id="timer" style="font-size:1.5em"></div>
+		<div id="answer_status" style="font-size:1.5em"></div>
+	</div>
+</div>
+
+
+
+<div class="element"  id="question_area" style="width: 100%; padding-top: 100px; padding-bottom: 80px; padding-left:8px; padding-right: 8px">
+	<div class="pic">
+	</div>
+	<div class="question" style="font-size: 2.5em">
+	</div>
+	<div class="answers">
+	</div>
+	<div id="quiz"></div>
+    <!--<button href="https://www.google.co.in/"id="goback">GoBack</button>-->
+    <a  href="{% url 'javacourse' %}" id="goback" style="top: 10px; left:300;" disabled>Go Back</a>
+
+    <button id="submit" onclick="resetElement()">Submit Quiz</button>
+    
+    <div id="results"></div>
+    <style>
+        body {
+        font-family: sans-serif;
+        display: grid;
+        height: 100vh;
+        place-items: center;
+      }
+      
+      .base-timer {
+        
+        top:0;
+        position: fixed;
+        right:0;
+        width: 100px;
+        height: 70px;
+      }
+      
+      .base-timer__svg {
+        transform: scaleX(-1);
+      }
+      
+      .base-timer__circle {
+        fill: none;
+        stroke: none;
+      }
+      
+      .base-timer__path-elapsed {
+        stroke-width: 7px;
+        stroke: grey;
+      }
+      
+      .base-timer__path-remaining {
+        stroke-width: 7px;
+        stroke-linecap: round;
+        transform: rotate(90deg);
+        transform-origin: center;
+        transition: 1s linear all;
+        fill-rule: nonzero;
+        stroke: currentColor;
+      }
+      
+      .base-timer__path-remaining.green {
+        color: rgb(65, 184, 131);
+      }
+      
+      .base-timer__path-remaining.orange {
+        color: orange;
+      }
+      
+      .base-timer__path-remaining.red {
+        color: red;
+      }
+      
+      .base-timer__label {
+        position: fixed;
+        width: 50px;
+        height:50px;
+        top: 25px;
+        right:25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size:28px;
+      }
+      </style>
+<style>
+    body{
+	font-size: 20px;
+	font-family: sans-serif;
+	color: #333;
+}
+.question{
+	font-weight: 600;
+}
+.answers {
+  margin-bottom: 20px;
+}
+.answers label{
+  display: block;
+}
+#submit{
+	font-family: sans-serif;
+	font-size: 20px;
+	background-color: #279;
+	color: #fff;
+	border: 0px;
+	border-radius: 3px;
+	padding: 10px;
+	cursor: pointer;
+	margin-bottom: 20px;
+}
+#submit:hover{
+	background-color: #38a;
+}
+#goback{
+   /* position: absolute;*/
+    position: -webkit-sticky;
+    position: fixed;
+	font-family: sans-serif;
+	font-size: 20px;
+	background-color: #279;
+	color: #fff;
+	border: 0px;
+	border-radius: 3px;
+	padding: 16px;
+	cursor: pointer;
+	margin-bottom: 20px;
+    top:0;
+    left: 10px;
+   
+}
+</style>
+
+<script>
+  
+    (function(){
+    function buildQuiz(){
+      // variable to store the HTML output
+      const output = [];
+  
+      // for each question...
+      myQuestions.forEach(
+        (currentQuestion, questionNumber) => {
+  
+          // variable to store the list of possible answers
+          const answers = [];
+  
+          // and for each available answer...
+          for(letter in currentQuestion.answers){
+  
+            // ...add an HTML radio button
+            answers.push(
+              `<label>
+                <input type="radio" name="question${questionNumber}" value="${letter}">
+                ${letter} :
+                ${currentQuestion.answers[letter]}
+              </label>`
+            );
+          }
+  
+          // add this question and its answers to the output
+          output.push(
+            `<div class="question"> ${currentQuestion.question} </div>
+            <div class="answers"> ${answers.join('')} </div>`
+          );
+        }
+      );
+  
+      // finally combine our output list into one string of HTML and put it on the page
+      quizContainer.innerHTML = output.join('');
+    }
+  
+    function showResults(){
+  
+      // gather answer containers from our quiz
+      const answerContainers = quizContainer.querySelectorAll('.answers');
+  
+      // keep track of user's answers
+      let numCorrect = 0;
+  
+      // for each question...
+      myQuestions.forEach( (currentQuestion, questionNumber) => {
+  
+        // find selected answer
+        const answerContainer = answerContainers[questionNumber];
+        const selector = `input[name=question${questionNumber}]:checked`;
+        const userAnswer = (answerContainer.querySelector(selector) || {}).value;
+  
+        // if answer is correct
+        if(userAnswer === currentQuestion.correctAnswer){
+          // add to the number of correct answers
+          numCorrect++;
+  
+          // color the answers green
+          answerContainers[questionNumber].style.color = 'lightgreen';
+        }
+        // if answer is wrong or blank
+        else{
+          // color the answers red
+          answerContainers[questionNumber].style.color = 'red';
+        }
+      });
+  
+      // show number of correct answers out of total
+      resultsContainer.innerHTML = `${numCorrect} out of ${myQuestions.length}`;
+      
+    }
+  
+    const quizContainer = document.getElementById('quiz');
+    const resultsContainer = document.getElementById('results');
+    const submitButton = document.getElementById('submit');
+    const myQuestions = [
+      {
+        question: "What is the return type of a method that does not return any value?",
+        answers: {
+          a: "int",
+          b: "void",
+          c: "double",
+          d: "None of the above"
+        },
+        correctAnswer: "b"
+      },
+      {
+        question: "What is the process of defining more than one method in a class differentiated by method signature?",
+        answers: {
+         
+          a: "Function Overloading",
+          b: "Function Overriding",
+          c: "Function Doibling",
+          
+        },
+        correctAnswer: "a"
+      },
+      {
+        question: "Which of the following is not OOPS concept in Java?",
+        answers: {
+          a: "Inheritance",
+          b: "Polymorphism",
+          c: "Encapsulation",
+          d: "Compliation"
+        },
+        correctAnswer: "d"
+      },
+      {
+        question: "Method overriding is combination of inheritance and polymorphism?",
+        answers: {
+          a: "False",
+          b: "True",
+          
+        },
+        correctAnswer: "b"
+      },
+      {
+        question: "Which of the following is not a Java features? ",
+        answers: {
+          a: "Dynamic",
+          b: "Architecture Neutral",
+          c: "Use of pointers",
+          d: "Object Oreinted"
+        },
+        correctAnswer: "c"
+      },
+      {
+        question: "Evaluate the following Java expression, if x=3, y=5, and z=10  ++z + y - y + z + x++",
+        answers: {
+          a: "23",
+          b: "20",
+          c: "24",
+          d: "21"
+        },
+        correctAnswer: "c"
+      }
+    ];
+  
+    // Kick things off
+    buildQuiz();
+  
+    // Event listeners
+    //submitButton.addEventListener('click',     
+     //showResults());
+
+  //})();
+ // submitButton.addEventListener('click', showResults);
+ submitButton.addEventListener('click',() => {    
+     showResults();
+     resetElement();    
+});
+})();
+  //submitButton.addEventListener('click',resetElement );})();
+  
+  
+</script>
+<div id="app"></div>
+
+<script>
+  const FULL_DASH_ARRAY = 283;
+const WARNING_THRESHOLD = 10;
+const ALERT_THRESHOLD = 5;
+
+const COLOR_CODES = {
+  info: {
+    color: "green"
+  },
+  warning: {
+    color: "orange",
+    threshold: WARNING_THRESHOLD
+  },
+  alert: {
+    color: "red",
+    threshold: ALERT_THRESHOLD
+  }
+};
+
+const TIME_LIMIT = 10;
+let timePassed = 0;
+let timeLeft = TIME_LIMIT;
+let timerInterval = null;
+let remainingPathColor = COLOR_CODES.info.color;
+let x=10;
+
+document.getElementById("app").innerHTML = `
+<div  class="base-timer" id="bt">
+  <svg class="base-timer__svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <g class="base-timer__circle">
+      <circle class="base-timer__path-elapsed" cx="50" cy="50" r="45"></circle>
+      <path
+        id="base-timer-path-remaining"
+        stroke-dasharray="283"
+        class="base-timer__path-remaining ${remainingPathColor}"
+        d="
+          M 50, 50
+          m -45, 0
+          a 45,45 0 1,0 90,0
+          a 45,45 0 1,0 -90,0
+        "
+      ></path>
+    </g>
+  </svg>
+  <span id="base-timer-label" class="base-timer__label">${formatTime(
+    timeLeft
+  )}</span>
+</div>
+`;
+
+startTimer();
+
+function onTimesUp() {
+  clearInterval(timerInterval);
+  document.getElementById("submit").click();
+  
+}
+
+function startTimer() {
+  timerInterval = setInterval(() => {
+    timePassed = timePassed += 1;
+    timeLeft = TIME_LIMIT - timePassed;
+    x=x-1;
+    document.getElementById("base-timer-label").innerHTML = formatTime(
+      timeLeft
+    );
+    setCircleDasharray();
+    setRemainingPathColor(timeLeft);
+    
+    if (timeLeft === 0 ) {
+      onTimesUp();
+    }
+  
+
+  }, 1000);
+   
+}
+
+
+function formatTime(time) {
+  const minutes = Math.floor(time / 60);
+  let seconds = time % 60;
+
+  if (seconds < 10) {
+    seconds = `0${seconds}`;
+  }
+
+  return `${minutes}:${seconds}`;
+}
+
+function setRemainingPathColor(timeLeft) {
+  const { alert, warning, info } = COLOR_CODES;
+  if (timeLeft <= alert.threshold) {
+    document
+      .getElementById("base-timer-path-remaining")
+      .classList.remove(warning.color);
+    document
+      .getElementById("base-timer-path-remaining")
+      .classList.add(alert.color);
+  } else if (timeLeft <= warning.threshold) {
+    document
+      .getElementById("base-timer-path-remaining")
+      .classList.remove(info.color);
+    document
+      .getElementById("base-timer-path-remaining")
+      .classList.add(warning.color);
+  }
+}
+
+function calculateTimeFraction() {
+  const rawTimeFraction = timeLeft / TIME_LIMIT;
+  return rawTimeFraction - (1 / TIME_LIMIT) * (1 - rawTimeFraction);
+}
+
+function setCircleDasharray() {
+  const circleDasharray = `${(
+    calculateTimeFraction() * FULL_DASH_ARRAY
+  ).toFixed(0)} 283`;
+  document
+    .getElementById("base-timer-path-remaining")
+    .setAttribute("stroke-dasharray", circleDasharray);
+}
+let timedone = 0;
+function resetElement()
+{
+    document.getElementById("bt").style.display = "none";
+}
+
+</script>
+</div>
+</body>
+</html>
